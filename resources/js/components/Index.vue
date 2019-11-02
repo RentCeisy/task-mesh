@@ -12,7 +12,7 @@
                 <th><img class="product-image" :src="'/img/' + product.image"></th>
                 <th>{{product.description}}</th>
                 <th></th>
-                <th ><button @click="deleteProduct(product.id)" class="button is-primary">Delete</button></th>
+                <th><button @click="deleteProduct(product.id)" class="button is-primary">Delete</button></th>
             </tr>
         </table>
     </div>
@@ -29,6 +29,9 @@
             }
         },
         methods: {
+            saveProduct() {
+
+            },
             getProducts() {
                 this.$http.get('/products/cat/' + this.getCurCategory())
                     .then(resp => {

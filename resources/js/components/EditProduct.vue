@@ -3,20 +3,19 @@
         <div class="columns">
             <div class="column">
                 <label for="image">Add Image:</label>
-                <input type="file" id="image" name="name">
+                <input type="file" id="image" name="name" multiple accept="image/*" @change="onFileChange">
             </div>
             <div class="column">
                 <label for="name">Input name:</label>
-                <input type="text" id="name" name="name">
+                <input type="text" id="name" v-model="name" name="name">
             </div>
             <div class="column">
                 <label for="cat">Select Category:</label>
                 <div class="field">
                     <div class="control">
                         <div class="select is-primary">
-                            <select id="cat">
-                                <option>Select dropdown</option>
-                                <option>With options</option>
+                            <select id="cat" v-model="category">
+                                <option v-for="cat in categories" :value="cat.id">{{cat.value}}</option>
                             </select>
                         </div>
                     </div>
@@ -26,7 +25,16 @@
         <div class="columns">
             <div class="column">
                 <label for="description">Input Decription:</label>
-                <textarea class="textarea" id="description" placeholder="e.g. Hello world"></textarea>
+                <textarea class="textarea" id="description" v-model="description"></textarea>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+            </div>
+            <div class="column">
+                <button class="button" @click="saveProduct">Save</button>
+            </div>
+            <div class="column">
             </div>
         </div>
     </div>
@@ -40,11 +48,68 @@
                 description: '',
                 image: '',
                 category: '',
-                categories: null
+                categories: null,
+                id: 0
+            }
+        },
+        methods: {
+            saveProduct() {
+                const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+                let data = new FormData;
+                data.append('name', this.name);
+                data.append('description', this.name);
+                data.append('image', this.image);
+                data.append('category', this.category);
+                data.append('id', this.id);
+                this.$http.post('/api/product', data, config).then(resp => {
+                    window.document.href = '/';
+                }, resp => {
+                    console.log(resp)
+                })
+            },
+            onFileChange(e) {
+                var files = e.target.files || e.dataTransfer.files;
+                if (!files.length)
+                    return;
+                if(files[0].size > 1024 * 1024) {
+                    this.errorImage = true;
+                    return;
+                }
+                this.errorImage = false;
+                this.avatar = files[0];
+                this.createImage(files[0]);
+            },
+            createImage(file) {
+                var reader = new FileReader();
+                var vm = this;
+                reader.onload = (e) => {
+                    vm.image = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            },
+            getCategories() {
+                this.$http.get('/api/category')
+                    .then(resp => {
+                        this.categories = resp.body;
+                    }, resp => {
+                        console.log(resp);
+                    })
+            },
+            getProduct() {
+                this.$http.get('/api/product/' + this.id)
+                    .then(resp => {
+                        this.name = resp.body.name;
+                        this.description = resp.body.description;
+                        this.category = resp.body.category_id;
+                    })
             }
         },
         created() {
-            this.ax
+            this.id = this.$route.params.id;
+            this.getCategories();
+            if (this.id != 0) {
+                this.getProduct();
+            }
         }
     }
 </script>

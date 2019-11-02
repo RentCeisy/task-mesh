@@ -129,6 +129,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -136,11 +144,78 @@ __webpack_require__.r(__webpack_exports__);
       description: '',
       image: '',
       category: '',
-      categories: null
+      categories: null,
+      id: 0
     };
   },
+  methods: {
+    saveProduct: function saveProduct() {
+      var config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+      var data = new FormData();
+      data.append('name', this.name);
+      data.append('description', this.name);
+      data.append('image', this.image);
+      data.append('category', this.category);
+      data.append('id', this.id);
+      this.$http.post('/api/product', data, config).then(function (resp) {
+        window.document.href = '/';
+      }, function (resp) {
+        console.log(resp);
+      });
+    },
+    onFileChange: function onFileChange(e) {
+      var files = e.target.files || e.dataTransfer.files;
+      if (!files.length) return;
+
+      if (files[0].size > 1024 * 1024) {
+        this.errorImage = true;
+        return;
+      }
+
+      this.errorImage = false;
+      this.avatar = files[0];
+      this.createImage(files[0]);
+    },
+    createImage: function createImage(file) {
+      var reader = new FileReader();
+      var vm = this;
+
+      reader.onload = function (e) {
+        vm.image = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
+    },
+    getCategories: function getCategories() {
+      var _this = this;
+
+      this.$http.get('/api/category').then(function (resp) {
+        _this.categories = resp.body;
+      }, function (resp) {
+        console.log(resp);
+      });
+    },
+    getProduct: function getProduct() {
+      var _this2 = this;
+
+      this.$http.get('/api/product/' + this.id).then(function (resp) {
+        _this2.name = resp.body.name;
+        _this2.description = resp.body.description;
+        _this2.category = resp.body.category_id;
+      });
+    }
+  },
   created: function created() {
-    this.ax;
+    this.id = this.$route.params.id;
+    this.getCategories();
+
+    if (this.id != 0) {
+      this.getProduct();
+    }
   }
 });
 
@@ -185,6 +260,7 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    saveProduct: function saveProduct() {},
     getProducts: function getProducts() {
       var _this = this;
 
@@ -1503,59 +1579,141 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "primary-window" }, [
-      _c("div", { staticClass: "columns" }, [
-        _c("div", { staticClass: "column" }, [
-          _c("label", { attrs: { for: "image" } }, [_vm._v("Add Image:")]),
-          _vm._v(" "),
-          _c("input", { attrs: { type: "file", id: "image", name: "name" } })
-        ]),
+  return _c("div", { staticClass: "primary-window" }, [
+    _c("div", { staticClass: "columns" }, [
+      _c("div", { staticClass: "column" }, [
+        _c("label", { attrs: { for: "image" } }, [_vm._v("Add Image:")]),
         _vm._v(" "),
-        _c("div", { staticClass: "column" }, [
-          _c("label", { attrs: { for: "name" } }, [_vm._v("Input name:")]),
-          _vm._v(" "),
-          _c("input", { attrs: { type: "text", id: "name", name: "name" } })
-        ]),
+        _c("input", {
+          attrs: {
+            type: "file",
+            id: "image",
+            name: "name",
+            multiple: "",
+            accept: "image/*"
+          },
+          on: { change: _vm.onFileChange }
+        })
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "column" }, [
+        _c("label", { attrs: { for: "name" } }, [_vm._v("Input name:")]),
         _vm._v(" "),
-        _c("div", { staticClass: "column" }, [
-          _c("label", { attrs: { for: "cat" } }, [_vm._v("Select Category:")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "field" }, [
-            _c("div", { staticClass: "control" }, [
-              _c("div", { staticClass: "select is-primary" }, [
-                _c("select", { attrs: { id: "cat" } }, [
-                  _c("option", [_vm._v("Select dropdown")]),
-                  _vm._v(" "),
-                  _c("option", [_vm._v("With options")])
-                ])
-              ])
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.name,
+              expression: "name"
+            }
+          ],
+          attrs: { type: "text", id: "name", name: "name" },
+          domProps: { value: _vm.name },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.name = $event.target.value
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "column" }, [
+        _c("label", { attrs: { for: "cat" } }, [_vm._v("Select Category:")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "field" }, [
+          _c("div", { staticClass: "control" }, [
+            _c("div", { staticClass: "select is-primary" }, [
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.category,
+                      expression: "category"
+                    }
+                  ],
+                  attrs: { id: "cat" },
+                  on: {
+                    change: function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.category = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    }
+                  }
+                },
+                _vm._l(_vm.categories, function(cat) {
+                  return _c("option", { domProps: { value: cat.id } }, [
+                    _vm._v(_vm._s(cat.value))
+                  ])
+                }),
+                0
+              )
             ])
           ])
         ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "columns" }, [
+      _c("div", { staticClass: "column" }, [
+        _c("label", { attrs: { for: "description" } }, [
+          _vm._v("Input Decription:")
+        ]),
+        _vm._v(" "),
+        _c("textarea", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.description,
+              expression: "description"
+            }
+          ],
+          staticClass: "textarea",
+          attrs: { id: "description" },
+          domProps: { value: _vm.description },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.description = $event.target.value
+            }
+          }
+        })
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "columns" }, [
+      _c("div", { staticClass: "column" }),
+      _vm._v(" "),
+      _c("div", { staticClass: "column" }, [
+        _c(
+          "button",
+          { staticClass: "button", on: { click: _vm.saveProduct } },
+          [_vm._v("Save")]
+        )
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "columns" }, [
-        _c("div", { staticClass: "column" }, [
-          _c("label", { attrs: { for: "description" } }, [
-            _vm._v("Input Decription:")
-          ]),
-          _vm._v(" "),
-          _c("textarea", {
-            staticClass: "textarea",
-            attrs: { id: "description", placeholder: "e.g. Hello world" }
-          })
-        ])
-      ])
+      _c("div", { staticClass: "column" })
     ])
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 

@@ -40,18 +40,42 @@ class ProductsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'id' => 'required|numeric',
+            'name' => 'required|string|min:3',
+            'description' => 'required|string|min:3',
+            'category' => 'required|numeric',
+            'image' => 'mimes:jpeg,jpg,png|max:1000'
+        ]);
+
+        if ($request->hasFile('image')) {
+            $request->validate([
+
+            ]);
+            $imageName = $request->file('image')->getClientOriginalName();
+            $formatImage = explode('.', $imageName);
+            $imageName = time() . '_' . md5($imageName) . '.' . $formatImage[count($formatImage) - 1];
+            $path = '/img/';
+            $publicPath = public_path($path) . $imageName;
+            dd($publicPath);
+
+        }
+
+        if ($request->get('id') == 0) {
+
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param ProductRepository $productRepository
+     * @param int $id
+     * @return Product
      */
-    public function show($id)
+    public function show(ProductRepository $productRepository, $id)
     {
-        //
+        return $productRepository->getById($id);
     }
 
     /**
