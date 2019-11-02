@@ -1,0 +1,17 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+.cursor {
+    cursor: pointer;
+}
+
+.primary-window {
+    width: calc(100% - 16rem);
+    margin-left: 16rem;
+}
