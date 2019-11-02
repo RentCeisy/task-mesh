@@ -11109,3 +11109,7 @@ a.text-dark:focus {
   margin-left: 16rem;
 }
 
+.card {
+  padding: 3rem;
+}
+

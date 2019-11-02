@@ -6,6 +6,7 @@ use App\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\Lib\ProductRepository;
+use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
 {
@@ -35,35 +36,45 @@ class ProductsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param ProductRepository $productRepository
+     * @return void
      */
-    public function store(Request $request)
+    public function store(Request $request, ProductRepository $productRepository)
     {
         $request->validate([
             'id' => 'required|numeric',
             'name' => 'required|string|min:3',
             'description' => 'required|string|min:3',
             'category' => 'required|numeric',
-            'image' => 'mimes:jpeg,jpg,png|max:1000'
         ]);
-
+        $image = null;
+        $name = $request->get('name');
+        $category = $request->get('category');
+        $description = $request->get('description');
         if ($request->hasFile('image')) {
             $request->validate([
-
+                'image' => 'mimes:jpeg,jpg,png|max:1000'
             ]);
             $imageName = $request->file('image')->getClientOriginalName();
             $formatImage = explode('.', $imageName);
             $imageName = time() . '_' . md5($imageName) . '.' . $formatImage[count($formatImage) - 1];
-            $path = '/img/';
-            $publicPath = public_path($path) . $imageName;
-            dd($publicPath);
-
+            $path = 'img/';
+            $publicPath = public_path($path);
+            Storage::put($path . $imageName, $request->get('image'));
+            $image = $imageName;
         }
+        $data = [
+            'name' => $name,
+            'description' => $description,
+            'category_id' => $category,
+            'image' => $image,
+        ];
+        $productRepository->create($data);
 
-        if ($request->get('id') == 0) {
-
-        }
+        return [
+            'msg' => 'update Success'
+        ];
     }
 
     /**

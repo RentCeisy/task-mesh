@@ -38,4 +38,9 @@ class ProductQuery implements ProductRepository
     {
         return Product::whereIn('category_id', $ids)->get();
     }
+
+    public function create(array $data)
+    {
+        Product::create($data);
+    }
 }

@@ -1,20 +1,22 @@
 <template>
     <div class="primary-window">
-        <table class="table">
-            <tr>
-                <th>Name</th>
-                <th>Image</th>
-                <th>Description</th>
-                <th>Delete</th>
-            </tr>
-            <tr v-for="product in products">
-                <th><router-link :to="'product/edit/' + product.id">{{product.name}}</router-link></th>
-                <th><img class="product-image" :src="'/img/' + product.image"></th>
-                <th>{{product.description}}</th>
-                <th></th>
-                <th><button @click="deleteProduct(product.id)" class="button is-primary">Delete</button></th>
-            </tr>
-        </table>
+        <div class="card">
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <th>Image</th>
+                    <th>Description</th>
+                    <th>Delete</th>
+                </tr>
+                <tr v-for="product in products">
+                    <th><router-link :to="'product/edit/' + product.id">{{product.name}}</router-link></th>
+                    <th><img class="product-image" :src="path + 'app/img/' + product.image"></th>
+                    <th>{{product.description}}</th>
+                    <th></th>
+                    <th><button @click="deleteProduct(product.id)" class="button is-primary">Delete</button></th>
+                </tr>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -26,6 +28,7 @@
             return {
                 products: null,
                 categoryId: 0,
+                path: ''
             }
         },
         methods: {
@@ -35,7 +38,8 @@
             getProducts() {
                 this.$http.get('/products/cat/' + this.getCurCategory())
                     .then(resp => {
-                        this.products = resp.body;
+                        this.products = resp.body.products;
+                        this.path = resp.body.path;
                     }, resp => {
                         console.log(resp);
                     })

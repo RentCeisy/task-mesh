@@ -61,30 +61,38 @@
                 data.append('image', this.image);
                 data.append('category', this.category);
                 data.append('id', this.id);
-                this.$http.post('/api/product', data, config).then(resp => {
-                    window.document.href = '/';
-                }, resp => {
-                    console.log(resp)
-                })
+                if (this.id == 0) {
+                    this.$http.post('/api/product', data, config).then(resp => {
+                        window.document.href = '/';
+                    }, resp => {
+                        console.log(resp)
+                    })
+                } else {
+                    this.$http.put('/api/product/' + this.id, data, config).then(resp => {
+                        window.document.href = '/';
+                    }, resp => {
+                        console.log(resp)
+                    })
+                }
             },
             onFileChange(e) {
-                var files = e.target.files || e.dataTransfer.files;
+                let files = e.target.files || e.dataTransfer.files;
                 if (!files.length)
                     return;
                 if(files[0].size > 1024 * 1024) {
-                    this.errorImage = true;
                     return;
                 }
-                this.errorImage = false;
-                this.avatar = files[0];
-                this.createImage(files[0]);
+                console.log(files[0])
+                this.image = files[0];
+                // this.createImage(files[0]);
             },
             createImage(file) {
-                var reader = new FileReader();
-                var vm = this;
+                let reader = new FileReader();
+                let vm = this;
                 reader.onload = (e) => {
                     vm.image = e.target.result;
                 };
+                console.log(this.image)
                 reader.readAsDataURL(file);
             },
             getCategories() {
