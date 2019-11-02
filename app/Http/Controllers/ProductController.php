@@ -11,10 +11,7 @@ class ProductController extends Controller
     public function getProductsByCat(ProductRepository $productRepository, CategoryRepository $categoryRepository, int $id)
     {
         if ($id === 0) {
-            return [
-                'products' => $productRepository->getAll(),
-                'path' => storage_path(),
-                ];
+            return $productRepository->getAll();
         }
         $ids = [$id];
         $rootCategory = $categoryRepository->getCategoryById($id);
@@ -22,9 +19,6 @@ class ProductController extends Controller
         foreach ($childs as $child) {
             $ids[] = $child->id;
         }
-        return [
-        'products' => $productRepository->getProductsByCat($ids),
-        'path' => storage_path(),
-    ];
+        return $productRepository->getProductsByCat($ids);
     }
 }

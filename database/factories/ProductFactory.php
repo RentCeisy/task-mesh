@@ -17,6 +17,6 @@ $factory->define(Product::class, function (Faker $faker) {
         'category_id' => rand(1, 12),
         'name' => $faker->sentence(1),
         'description' => $faker->realText($faker->numberBetween(50, 100)),
-        'image' => $img[array_rand($img, 1)]
+        'image' => '/img/' . $img[array_rand($img, 1)]
     ];
 });

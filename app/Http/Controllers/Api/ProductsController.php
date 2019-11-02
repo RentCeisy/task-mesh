@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Product;
+use Faker\Provider\Image;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\Lib\ProductRepository;
@@ -52,6 +53,11 @@ class ProductsController extends Controller
         $name = $request->get('name');
         $category = $request->get('category');
         $description = $request->get('description');
+        $data = [
+            'name' => $name,
+            'description' => $description,
+            'category_id' => $category,
+        ];
         if ($request->hasFile('image')) {
             $request->validate([
                 'image' => 'mimes:jpeg,jpg,png|max:1000'
@@ -59,22 +65,13 @@ class ProductsController extends Controller
             $imageName = $request->file('image')->getClientOriginalName();
             $formatImage = explode('.', $imageName);
             $imageName = time() . '_' . md5($imageName) . '.' . $formatImage[count($formatImage) - 1];
-            $path = 'img/';
-            $publicPath = public_path($path);
+            $path = '/img/';
             Storage::put($path . $imageName, $request->get('image'));
-            $image = $imageName;
+            $image = $path . $imageName;
+            $data['image'] = $image;
         }
-        $data = [
-            'name' => $name,
-            'description' => $description,
-            'category_id' => $category,
-            'image' => $image,
-        ];
-        $productRepository->create($data);
 
-        return [
-            'msg' => 'update Success'
-        ];
+        $productRepository->create($data);
     }
 
     /**
@@ -107,9 +104,32 @@ class ProductsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductRepository $productRepository, Request $request, $id)
     {
-        //
+        $request->validate([
+            'id' => 'required|numeric',
+            'name' => 'required|string|min:3',
+            'description' => 'required|string|min:3',
+            'category' => 'required|numeric',
+        ]);
+        $product = $productRepository->getById($request->get('id'));
+        $product->name = $request->get('name');
+        $product->description = $request->get('description');
+        $product->category = $request->get('category');
+        if ($request->hasFile('image')) {
+            $request->validate([
+                'image' => 'mimes:jpeg,jpg,png|max:1000'
+            ]);
+            $imageName = $request->file('image')->getClientOriginalName();
+            $formatImage = explode('.', $imageName);
+            $imageName = time() . '_' . md5($imageName) . '.' . $formatImage[count($formatImage) - 1];
+            $path = '/img/';
+            Storage::put($path . $imageName, $request->get('image'));
+            $image = $path . $imageName;
+            $product->image = $image;
+        }
+
+        $productRepository->save($product);
     }
 
     /**

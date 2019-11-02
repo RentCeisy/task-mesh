@@ -1,40 +1,70 @@
 <template>
     <div class="primary-window">
-        <div class="columns">
-            <div class="column">
-                <label for="image">Add Image:</label>
-                <input type="file" id="image" name="name" multiple accept="image/*" @change="onFileChange">
+        <div class="card">
+            <div class="columns">
+                <div class="column">
+                </div>
+                <div class="column">
+                    <label for="name">Input name:</label>
+                </div>
+                <div class="column">
+                    <router-link tag="button" class="button" :to="'/'">Back</router-link>
+                </div>
             </div>
-            <div class="column">
-                <label for="name">Input name:</label>
-                <input type="text" id="name" v-model="name" name="name">
+            <div class="columns">
+                <div class="column">
+                </div>
+                <div class="column">
+                    <input type="text" id="name" v-model="name" name="name">
+                </div>
+                <div class="column">
+                </div>
             </div>
-            <div class="column">
-                <label for="cat">Select Category:</label>
-                <div class="field">
-                    <div class="control">
-                        <div class="select is-primary">
-                            <select id="cat" v-model="category">
-                                <option v-for="cat in categories" :value="cat.id">{{cat.value}}</option>
-                            </select>
+            <div class="columns">
+                <div class="column"></div>
+                <div class="column">
+                    <label for="cat">Select Category:</label>
+                    <div class="field">
+                        <div class="control">
+                            <div class="select is-primary">
+                                <select id="cat" v-model="category">
+                                    <option v-for="cat in categories" :value="cat.id">{{cat.value}}</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="column"></div>
             </div>
-        </div>
-        <div class="columns">
-            <div class="column">
-                <label for="description">Input Decription:</label>
-                <textarea class="textarea" id="description" v-model="description"></textarea>
+            <div class="columns">
+                <div class="column"></div>
+                <div class="column">
+                    <label for="image">Add Image:</label>
+                    <input type="file" id="image" name="name" multiple accept="image/*" @change="onFileChange">
+                </div>
+                <div class="column"></div>
             </div>
-        </div>
-        <div class="columns">
-            <div class="column">
+            <div class="columns">
+                <div class="column"></div>
+                <div class="column">
+                    <img :src="productImage" v-if="image == null" />
+                </div>
+                <div class="column"></div>
             </div>
-            <div class="column">
-                <button class="button" @click="saveProduct">Save</button>
+            <div class="columns">
+                <div class="column">
+                    <label for="description">Input Decription:</label>
+                    <textarea class="textarea" id="description" v-model="description"></textarea>
+                </div>
             </div>
-            <div class="column">
+            <div class="columns">
+                <div class="column">
+                </div>
+                <div class="column">
+                    <button class="button" @click="saveProduct">Save</button>
+                </div>
+                <div class="column">
+                </div>
             </div>
         </div>
     </div>
@@ -46,9 +76,10 @@
             return {
                 name: '',
                 description: '',
-                image: '',
+                image: null,
                 category: '',
                 categories: null,
+                productImage: null,
                 id: 0
             }
         },
@@ -63,7 +94,7 @@
                 data.append('id', this.id);
                 if (this.id == 0) {
                     this.$http.post('/api/product', data, config).then(resp => {
-                        window.document.href = '/';
+                        document.location.href = '/';
                     }, resp => {
                         console.log(resp)
                     })
@@ -82,19 +113,9 @@
                 if(files[0].size > 1024 * 1024) {
                     return;
                 }
-                console.log(files[0])
                 this.image = files[0];
-                // this.createImage(files[0]);
             },
-            createImage(file) {
-                let reader = new FileReader();
-                let vm = this;
-                reader.onload = (e) => {
-                    vm.image = e.target.result;
-                };
-                console.log(this.image)
-                reader.readAsDataURL(file);
-            },
+
             getCategories() {
                 this.$http.get('/api/category')
                     .then(resp => {
@@ -106,9 +127,11 @@
             getProduct() {
                 this.$http.get('/api/product/' + this.id)
                     .then(resp => {
+                        console.log(resp);
                         this.name = resp.body.name;
                         this.description = resp.body.description;
                         this.category = resp.body.category_id;
+                        this.productImage = resp.body.image;
                     })
             }
         },

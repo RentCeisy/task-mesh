@@ -1,6 +1,11 @@
 <template>
     <div class="primary-window">
         <div class="card">
+            <div class="columns">
+                <div class="column">
+                    <router-link tag="button" :to="'/product/edit/0'" class="button">Add Product</router-link>
+                </div>
+            </div>
             <table class="table">
                 <tr>
                     <th>Name</th>
@@ -10,7 +15,7 @@
                 </tr>
                 <tr v-for="product in products">
                     <th><router-link :to="'product/edit/' + product.id">{{product.name}}</router-link></th>
-                    <th><img class="product-image" :src="path + 'app/img/' + product.image"></th>
+                    <th><img class="product-image" :src="product.image"></th>
                     <th>{{product.description}}</th>
                     <th></th>
                     <th><button @click="deleteProduct(product.id)" class="button is-primary">Delete</button></th>
@@ -38,8 +43,7 @@
             getProducts() {
                 this.$http.get('/products/cat/' + this.getCurCategory())
                     .then(resp => {
-                        this.products = resp.body.products;
-                        this.path = resp.body.path;
+                        this.products = resp.body;
                     }, resp => {
                         console.log(resp);
                     })
