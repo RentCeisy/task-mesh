@@ -2,10 +2,7 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use App\Repositories\Lib\ProductRepository;
-use App\Repositories\ProductQuery;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +18,12 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind('App\Repositories\Lib\CategoryRepository',
             'App\Repositories\CategoryQuery');
+
+        $this->app->bind('App\Services\Lib\ProductServiceImpl',
+            'App\Services\ProductService');
+
+        $this->app->bind('App\Services\Lib\CategoryServiceImpl',
+            'App\Services\CategoryService');
     }
 
     /**

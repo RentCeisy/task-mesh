@@ -11109,7 +11109,11 @@ a.text-dark:focus {
   margin-left: 16rem;
 }
 
-.card {
+.hero-app {
   padding: 3rem;
+}
+
+.middle-align {
+  vertical-align: middle;
 }
 

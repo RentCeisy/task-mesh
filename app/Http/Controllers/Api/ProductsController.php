@@ -3,25 +3,30 @@
 namespace App\Http\Controllers\Api;
 
 use App\Product;
-use Faker\Provider\Image;
+use App\Services\Lib\ProductServiceImpl;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Repositories\Lib\ProductRepository;
 use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
 {
 
+    protected $productService;
+
+    public function __construct(ProductServiceImpl $productService)
+    {
+        $this->productService = $productService;
+    }
 
     /**
      * Display a listing of the resource.
      *
-     * @param ProductRepository $productRepository
      * @return void
      */
-    public function index(ProductRepository $productRepository)
+    public function index() :Collection
     {
-        return $productRepository->getAll();
+        return $this->productService->getAll();
     }
 
     /**
@@ -38,10 +43,9 @@ class ProductsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param ProductRepository $productRepository
      * @return void
      */
-    public function store(Request $request, ProductRepository $productRepository)
+    public function store(Request $request)
     {
         $request->validate([
             'id' => 'required|numeric',
@@ -66,24 +70,22 @@ class ProductsController extends Controller
             $formatImage = explode('.', $imageName);
             $imageName = time() . '_' . md5($imageName) . '.' . $formatImage[count($formatImage) - 1];
             $path = '/img/';
-            Storage::put($path . $imageName, $request->get('image'));
+            Storage::putFileAs($path, $request->get('image'), $imageName);
             $image = $path . $imageName;
             $data['image'] = $image;
         }
-
-        $productRepository->create($data);
+        $this->productService->create($data);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param ProductRepository $productRepository
      * @param int $id
      * @return Product
      */
-    public function show(ProductRepository $productRepository, $id)
+    public function show($id)
     {
-        return $productRepository->getById($id);
+        return $this->productService->getById($id);
     }
 
     /**
@@ -104,18 +106,18 @@ class ProductsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ProductRepository $productRepository, Request $request, $id)
+    public function update(Request $request, $id)
     {
+
         $request->validate([
-            'id' => 'required|numeric',
             'name' => 'required|string|min:3',
             'description' => 'required|string|min:3',
             'category' => 'required|numeric',
         ]);
-        $product = $productRepository->getById($request->get('id'));
+        $product = $this->productService->getById($request->get('id'));
         $product->name = $request->get('name');
         $product->description = $request->get('description');
-        $product->category = $request->get('category');
+        $product->category_id = $request->get('category');
         if ($request->hasFile('image')) {
             $request->validate([
                 'image' => 'mimes:jpeg,jpg,png|max:1000'
@@ -124,23 +126,22 @@ class ProductsController extends Controller
             $formatImage = explode('.', $imageName);
             $imageName = time() . '_' . md5($imageName) . '.' . $formatImage[count($formatImage) - 1];
             $path = '/img/';
-            Storage::put($path . $imageName, $request->get('image'));
+            Storage::putFileAs($path, $request->file('image'), $imageName);
             $image = $path . $imageName;
             $product->image = $image;
         }
 
-        $productRepository->save($product);
+        $this->productService->save($product);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param ProductRepository $productRepository
      * @param int $id
      * @return void
      */
-    public function destroy(ProductRepository $productRepository, $id)
+    public function destroy($id)
     {
-        $productRepository->delete($id);
+        $this->productService->delete($id);
     }
 }

@@ -4,51 +4,66 @@ namespace App\Repositories;
 
 use App\Category;
 use App\Repositories\Lib\CategoryRepository;
+use Illuminate\Database\Eloquent\Collection;
 
 class CategoryQuery implements CategoryRepository
 {
 
+    protected $category;
+
+    public function __construct(Category $category)
+    {
+        $this->category = $category;
+    }
+
     public function getCategoryById($id): Category
     {
-        return Category::findOrFail($id);
+        return $category = $this->category->findOrFail($id);
     }
 
     public function getAll()
     {
-        return Category::all();
+        return $this->category->all();
     }
 
-    public function save(Category $category)
+    public function save($value)
     {
-        $category->save();
+        $this->category->value = $value;
+        $this->category->save();
     }
 
     public function delete($id)
     {
-        Category::findOrFail($id)->delete();
+        $this->getCategoryById($id)->delete();
     }
 
     public function getRelationshipAll()
     {
         //function roots does not working
-        $rootCategories = Category::whereNull('parent_id')->get();
-        $categories = [];
-        $i = 0;
+        $rootCategories = $this->category->whereNull('parent_id')->get();
         foreach ($rootCategories as $category) {
-            $childs = $category->children()->get();
-            $categories[$i] = [
-                'value' => $category->value,
-                'id' => $category->id
-            ];
-            foreach ($childs as $child) {
-                $categories[$i]['child'][] = [
-                    'value' => $child->value,
-                    'id' => $child->id
-                ];
-            }
-            $i++;
+            $categories[] = $category->first()->getDescendantsAndSelf()->toHierarchy();
         }
+        $collection = new Collection();
+        foreach ($categories as $category) {
+            foreach ($category as $item) {
+                $collection->push($item);
+            }
+        }
+        return $collection;
+    }
 
-        return $categories;
+    // this function doesn't work correctly becouse baum is dead.
+    public function create($value, $parent)
+    {
+        $this->category->create([
+            'value' => $value
+        ]);
+        if ($parent !== 0) {
+            $parentCategory = Category::where('id', $parent)->first();
+            $parentCategory->makeSiblingOf($this->category);
+        } else {
+            $this->category->makeRoot();
+        }
     }
 }

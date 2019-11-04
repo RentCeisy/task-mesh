@@ -7,15 +7,16 @@ use App\Repositories\Lib\ProductRepository;
 
 class ProductQuery implements ProductRepository
 {
+    protected $product;
+
+    public function __construct(Product $product)
+    {
+        $this->product = $product;
+    }
 
     public function getById($id): Product
     {
-        return Product::findOrFail($id);
-    }
-
-    public function getCategories($id)
-    {
-        // TODO: Implement getCategories() method.
+        return $this->product->findOrFail($id);
     }
 
     public function save(Product $product)
@@ -25,22 +26,22 @@ class ProductQuery implements ProductRepository
 
     public function delete($id)
     {
-        $product = Product::findOrFail($id);
+        $product = $this->getById($id);
         $product->delete();
     }
 
     public function getAll()
     {
-        return Product::all();
+        return $this->product->all();
     }
 
     public function getProductsByCat(array $ids)
     {
-        return Product::whereIn('category_id', $ids)->get();
+        return $this->product->whereIn('category_id', $ids)->get();
     }
 
     public function create(array $data)
     {
-        Product::create($data);
+        $this->product->create($data);
     }
 }

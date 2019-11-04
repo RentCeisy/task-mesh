@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\Lib\CategoryRepository;
-use Illuminate\Http\Request;
+use App\Services\Lib\CategoryServiceImpl;
 
 class CategoryController extends Controller
 {
-    public function getRelationshipAll(CategoryRepository $categoryRepository)
+    protected $categoryService;
+
+    public function __construct(CategoryServiceImpl $categoryService)
     {
-        return $categoryRepository->getRelationshipAll();
+        $this->categoryService = $categoryService;
+    }
+
+    public function getRelationshipAll()
+    {
+        return $this->categoryService->getRelationshipAll();
     }
 }

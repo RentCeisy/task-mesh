@@ -7,6 +7,6 @@ use Faker\Generator as Faker;
 
 $factory->define(Category::class, function (Faker $faker) {
     return [
-        'value' => 'category_' . $faker->realText($faker->numberBetween(10,20)),
+        'value' => 'category_' . $faker->realText($faker->numberBetween(10,15)),
     ];
 });

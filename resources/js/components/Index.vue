@@ -1,31 +1,34 @@
 <template>
-    <div class="primary-window">
-        <div class="card">
-            <div class="columns">
-                <div class="column">
-                    <router-link tag="button" :to="'/product/edit/0'" class="button">Add Product</router-link>
+    <div>
+        <side-bar></side-bar>
+        <div class="primary-window">
+            <div class="hero-app">
+                <div class="columns">
+                    <div class="column">
+                        <router-link tag="button" :to="'/product/edit/0'" class="button">Add Product</router-link>
+                    </div>
                 </div>
+                <table class="table">
+                    <tr>
+                        <th>Name</th>
+                        <th>Image</th>
+                        <th>Description</th>
+                        <th>Delete</th>
+                    </tr>
+                    <tr v-for="product in products">
+                        <td class="middle-align"><router-link :to="'product/edit/' + product.id">{{product.name}}</router-link></td>
+                        <td class="middle-align"><img class="product-image" :src="product.image"></td>
+                        <td class="middle-align">{{product.description}}</td>
+                        <td class="middle-align"><button @click="deleteProduct(product.id)" class="button is-primary">Delete</button></td>
+                    </tr>
+                </table>
             </div>
-            <table class="table">
-                <tr>
-                    <th>Name</th>
-                    <th>Image</th>
-                    <th>Description</th>
-                    <th>Delete</th>
-                </tr>
-                <tr v-for="product in products">
-                    <th><router-link :to="'product/edit/' + product.id">{{product.name}}</router-link></th>
-                    <th><img class="product-image" :src="product.image"></th>
-                    <th>{{product.description}}</th>
-                    <th></th>
-                    <th><button @click="deleteProduct(product.id)" class="button is-primary">Delete</button></th>
-                </tr>
-            </table>
         </div>
     </div>
 </template>
 
 <script>
+    import sideBar from './SideBar';
     import { mapState } from 'vuex';
 
     export default {
@@ -66,6 +69,9 @@
             selectCat(oldVal, newVal) {
                 this.getProducts()
             }
+        },
+        components: {
+            sideBar
         },
         created() {
             this.getProducts();

@@ -1,6 +1,7 @@
 import VueRouter from 'vue-router';
 import index from './components/Index'
 import editProduct from './components/EditProduct'
+import editCategory from './components/EditCategory'
 
 export default new VueRouter({
     routes: [
@@ -11,6 +12,11 @@ export default new VueRouter({
         {
             path: '/product/edit/:id',
             component: editProduct,
+            props: true
+        },
+        {
+            path: '/category/edit/:id',
+            component: editCategory,
             props: true
         },
     ],

@@ -2,23 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\Lib\CategoryRepository;
-use App\Repositories\Lib\ProductRepository;
-use Illuminate\Http\Request;
+use App\Services\Lib\CategoryServiceImpl;
+use App\Services\Lib\ProductServiceImpl;
 
 class ProductController extends Controller
 {
-    public function getProductsByCat(ProductRepository $productRepository, CategoryRepository $categoryRepository, int $id)
+    protected $productService;
+    protected $categoryService;
+
+    public function __construct(ProductServiceImpl $productService, CategoryServiceImpl $categoryService)
+    {
+        $this->categoryService = $categoryService;
+        $this->productService = $productService;
+    }
+
+    public function getProductsByCat(int $id)
     {
         if ($id === 0) {
-            return $productRepository->getAll();
+            return $this->productService->index();
         }
         $ids = [$id];
-        $rootCategory = $categoryRepository->getCategoryById($id);
+        $rootCategory = $this->categoryService->getCategoryById($id);
         $childs = $rootCategory->children()->get();
         foreach ($childs as $child) {
             $ids[] = $child->id;
         }
-        return $productRepository->getProductsByCat($ids);
+        return $this->productService->getProductsByCat($ids);
     }
 }

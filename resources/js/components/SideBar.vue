@@ -3,22 +3,18 @@
         <div class="side-bar__header has-text-centered">
             <strong>Категории</strong>
         </div>
+        <div class="btn-add-category">
+            <router-link tag="button" :to="'/category/edit/0'" class="button">Add category</router-link>
+        </div>
         <div>
-            <ul>
-                <li class="cursor" v-for="category in categories">
-                    <strong @click="selectCat(category.id)">{{category.value}}</strong>
-                    <ul>
-                        <li class="cursor" v-for="child in category.child">
-                                <span @click="selectCat(child.id)">{{child.value}}</span>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+            <tree-category v-if="categories != null" :categories="categories"></tree-category>
         </div>
     </div>
 </template>
 
 <script>
+    import treeCategory from './TreeCategory'
+
     export default {
         data() {
             return {
@@ -27,17 +23,17 @@
             }
         },
         methods: {
-            selectCat(id) {
-                this.$store.dispatch("setCategory", id);
-            },
             getCategories() {
-                this.$http.get('/category')
+                this.$http.get('/categories')
                     .then(response => {
                         this.categories = response.body;
                     }, response => {
                         console.log(response);
                     });
             }
+        },
+        components: {
+            treeCategory,
         },
         created() {
             this.getCategories();
@@ -58,5 +54,10 @@
             width: 100%;
             height: 50px;
         }
+    }
+
+    .btn-add-category {
+        padding: 5px;
+        text-align: center;
     }
 </style>
