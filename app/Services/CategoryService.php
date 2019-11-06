@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Category;
-use App\Repositories\Lib\CategoryRepository;
-use App\Services\Lib\CategoryServiceImpl;
+use App\Repositories\Impl\CategoryRepository;
+use App\Services\Impl\CategoryServiceImpl;
 use Illuminate\Database\Eloquent\Collection;
 
 class CategoryService implements CategoryServiceImpl

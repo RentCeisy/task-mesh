@@ -13,16 +13,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('App\Repositories\Lib\ProductRepository',
+        $this->app->bind('App\Repositories\Impl\ProductRepository',
             'App\Repositories\ProductQuery');
 
-        $this->app->bind('App\Repositories\Lib\CategoryRepository',
+        $this->app->bind('App\Repositories\Impl\CategoryRepository',
             'App\Repositories\CategoryQuery');
 
-        $this->app->bind('App\Services\Lib\ProductServiceImpl',
+        $this->app->bind('App\Services\Impl\ProductServiceImpl',
             'App\Services\ProductService');
 
-        $this->app->bind('App\Services\Lib\CategoryServiceImpl',
+        $this->app->bind('App\Services\Impl\CategoryServiceImpl',
             'App\Services\CategoryService');
     }
 

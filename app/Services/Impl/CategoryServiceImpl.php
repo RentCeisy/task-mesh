@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Lib;
+namespace App\Services\Impl;
 
 use App\Category;
 use Illuminate\Database\Eloquent\Collection;

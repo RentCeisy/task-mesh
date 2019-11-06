@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Lib\CategoryServiceImpl;
+use App\Services\Impl\CategoryServiceImpl;
 
 class CategoryController extends Controller
 {

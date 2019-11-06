@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Product;
-use App\Services\Lib\ProductServiceImpl;
+use App\Services\Impl\ProductServiceImpl;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;

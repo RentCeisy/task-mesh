@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Product;
-use App\Repositories\Lib\ProductRepository;
-use App\Services\Lib\ProductServiceImpl;
+use App\Repositories\Impl\ProductRepository;
+use App\Services\Impl\ProductServiceImpl;
 
 class ProductService implements ProductServiceImpl
 {

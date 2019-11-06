@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Lib\CategoryServiceImpl;
-use App\Services\Lib\ProductServiceImpl;
+use App\Services\Impl\CategoryServiceImpl;
+use App\Services\Impl\ProductServiceImpl;
 
 class ProductController extends Controller
 {

@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Category;
-use App\Repositories\Lib\CategoryRepository;
+use App\Repositories\Impl\CategoryRepository;
 use Illuminate\Database\Eloquent\Collection;
 
 class CategoryQuery implements CategoryRepository
@@ -53,7 +53,7 @@ class CategoryQuery implements CategoryRepository
         return $collection;
     }
 
-    // this function doesn't work correctly becouse baum is dead.
+    // this function doesn't work correctly  baum is dead.
     public function create($value, $parent)
     {
         $this->category->create([

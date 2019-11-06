@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Product;
-use App\Repositories\Lib\ProductRepository;
+use App\Repositories\Impl\ProductRepository;
 
 class ProductQuery implements ProductRepository
 {

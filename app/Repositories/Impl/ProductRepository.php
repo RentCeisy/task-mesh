@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Lib;
+namespace App\Repositories\Impl;
 
 use App\Product;
 

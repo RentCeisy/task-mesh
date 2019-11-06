@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Category;
-use App\Services\Lib\CategoryServiceImpl;
+use App\Services\Impl\CategoryServiceImpl;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
