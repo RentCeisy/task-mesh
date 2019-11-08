@@ -76,7 +76,7 @@
                 description: '',
                 image: null,
                 category: '',
-                categories: null,
+                categories: [],
                 productImage: null,
                 id: 0
             }
@@ -89,7 +89,6 @@
                 data.append('description', this.name);
                 data.append('image', this.productImage);
                 data.append('category', this.category);
-                data.append('id', this.id);
                 if (this.id == 0) {
                     this.$http.post('/api/product', data, config).then(resp => {
                         document.location.href = '/';
@@ -127,7 +126,8 @@
             getCategories() {
                 this.$http.get('/api/category')
                     .then(resp => {
-                        this.categories = resp.body;
+                        this.categories = [];
+                        this.sortCategory(resp.body, '');
                     }, resp => {
                         console.log(resp);
                     })
@@ -140,6 +140,17 @@
                         this.category = resp.body.category_id;
                         this.image = resp.body.image;
                     })
+            },
+            sortCategory(categories, prefix) {
+                for (let index in categories) {
+                    this.categories.push({
+                        id: categories[index].id,
+                        value: prefix + ' ' + categories[index].value,
+                    });
+                    if(categories[index].children.length > 0) {
+                        this.sortCategory(categories[index].children, '-' + prefix);
+                    }
+                }
             }
         },
         created() {

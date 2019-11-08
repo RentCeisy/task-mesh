@@ -44,7 +44,7 @@
 
             },
             getProducts() {
-                this.$http.get('/products/cat/' + this.getCurCategory())
+                this.$http.get('/api/products/cat/' + this.getCurCategory())
                     .then(resp => {
                         this.products = resp.body;
                     }, resp => {

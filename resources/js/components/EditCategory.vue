@@ -59,7 +59,6 @@
                     .then(resp => {
                         this.categoryName = resp.body.value;
                         if (resp.body.parent_id != null) {
-                            console.log(resp.body.parent_id)
                             this.categoryRoot = resp.body.parent_id;
                         }
                     }, resp => {

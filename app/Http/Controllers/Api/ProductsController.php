@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Product;
+use App\Services\Impl\CategoryServiceImpl;
 use App\Services\Impl\ProductServiceImpl;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -13,20 +14,22 @@ class ProductsController extends Controller
 {
 
     protected $productService;
+    protected $categoryService;
 
-    public function __construct(ProductServiceImpl $productService)
+    public function __construct(ProductServiceImpl $productService, CategoryServiceImpl $categoryService)
     {
         $this->productService = $productService;
+        $this->categoryService = $categoryService;
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return void
+     * @return Collection
      */
     public function index() :Collection
     {
-        return $this->productService->getAll();
+        return $this->productService->index();
     }
 
     /**
@@ -48,7 +51,6 @@ class ProductsController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id' => 'required|numeric',
             'name' => 'required|string|min:3',
             'description' => 'required|string|min:3',
             'category' => 'required|numeric',
@@ -74,7 +76,10 @@ class ProductsController extends Controller
             $image = $path . $imageName;
             $data['image'] = $image;
         }
-        $this->productService->create($data);
+
+        if ($this->productService->create($data)) {
+            return response(['created' => true]);
+        }
     }
 
     /**
@@ -102,9 +107,9 @@ class ProductsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return array
      */
     public function update(Request $request, $id)
     {
@@ -114,7 +119,7 @@ class ProductsController extends Controller
             'description' => 'required|string|min:3',
             'category' => 'required|numeric',
         ]);
-        $product = $this->productService->getById($request->get('id'));
+        $product = $this->productService->getById($id);
         $product->name = $request->get('name');
         $product->description = $request->get('description');
         $product->category_id = $request->get('category');
@@ -132,16 +137,32 @@ class ProductsController extends Controller
         }
 
         $this->productService->save($product);
+        return ['updated' => true];
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return void
+     * @return array
      */
     public function destroy($id)
     {
         $this->productService->delete($id);
+        return ['deleted' => true];
+    }
+
+    public function getProductsByCat(int $id)
+    {
+        if ($id === 0) {
+            return $this->productService->index();
+        }
+        $ids[] = $id;
+        $rootCategory = $this->categoryService->getCategoryById($id);
+        $childs = $rootCategory->children()->get();
+        foreach ($childs as $child) {
+            $ids[] = $child->id;
+        }
+        return $this->productService->getProductsByCat($ids);
     }
 }

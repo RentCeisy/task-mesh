@@ -157,7 +157,6 @@ __webpack_require__.r(__webpack_exports__);
         _this2.categoryName = resp.body.value;
 
         if (resp.body.parent_id != null) {
-          console.log(resp.body.parent_id);
           _this2.categoryRoot = resp.body.parent_id;
         }
       }, function (resp) {
@@ -275,7 +274,7 @@ __webpack_require__.r(__webpack_exports__);
       description: '',
       image: null,
       category: '',
-      categories: null,
+      categories: [],
       productImage: null,
       id: 0
     };
@@ -335,7 +334,9 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.$http.get('/api/category').then(function (resp) {
-        _this.categories = resp.body;
+        _this.categories = [];
+
+        _this.sortCategory(resp.body, '');
       }, function (resp) {
         console.log(resp);
       });
@@ -349,6 +350,18 @@ __webpack_require__.r(__webpack_exports__);
         _this2.category = resp.body.category_id;
         _this2.image = resp.body.image;
       });
+    },
+    sortCategory: function sortCategory(categories, prefix) {
+      for (var index in categories) {
+        this.categories.push({
+          id: categories[index].id,
+          value: prefix + ' ' + categories[index].value
+        });
+
+        if (categories[index].children.length > 0) {
+          this.sortCategory(categories[index].children, '-' + prefix);
+        }
+      }
     }
   },
   created: function created() {
@@ -418,7 +431,7 @@ __webpack_require__.r(__webpack_exports__);
     getProducts: function getProducts() {
       var _this = this;
 
-      this.$http.get('/products/cat/' + this.getCurCategory()).then(function (resp) {
+      this.$http.get('/api/products/cat/' + this.getCurCategory()).then(function (resp) {
         _this.products = resp.body;
       }, function (resp) {
         console.log(resp);
@@ -489,10 +502,11 @@ __webpack_require__.r(__webpack_exports__);
     getCategories: function getCategories() {
       var _this = this;
 
-      this.$http.get('/categories').then(function (response) {
-        _this.categories = response.body;
-      }, function (response) {
-        console.log(response);
+      this.$http.get('/api/category').then(function (resp) {
+        console.log(resp.body);
+        _this.categories = resp.body;
+      }, function (resp) {
+        console.log(resp);
       });
     }
   },
@@ -526,7 +540,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'root',
-  props: ['categories'],
+  props: ['categories', 'prefix'],
   methods: {
     existChildren: function existChildren(category) {
       if (category.children.length > 0) {
@@ -545,7 +559,8 @@ __webpack_require__.r(__webpack_exports__);
     selectCat: function selectCat(id) {
       this.$store.dispatch("setCategory", id);
     }
-  }
+  },
+  created: function created() {}
 });
 
 /***/ }),
@@ -611,7 +626,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".side-bar[data-v-223abea1] {\n  width: 16rem;\n  background: #5fd2b2;\n  height: 100%;\n  position: fixed;\n  box-shadow: 1px 0 10px rgba(0, 0, 0, 0.2);\n}\n.side-bar .side-bar__header[data-v-223abea1] {\n  border-bottom: 1px solid #1F896B;\n  width: 100%;\n  height: 50px;\n}\n.btn-add-category[data-v-223abea1] {\n  padding: 5px;\n  text-align: center;\n}", ""]);
+exports.push([module.i, ".side-bar[data-v-223abea1] {\n  width: 16rem;\n  background: #5fd2b2;\n  height: 100%;\n  position: fixed;\n  box-shadow: 1px 0 10px rgba(0, 0, 0, 0.2);\n}\n.side-bar .side-bar__header[data-v-223abea1] {\n  border-bottom: 1px solid #1F896B;\n  width: 100%;\n  height: 50px;\n}\n.btn-add-category[data-v-223abea1] {\n  padding: 5px;\n  text-align: center;\n}\n.category-menu[data-v-223abea1] {\n  padding-left: 12px;\n}", ""]);
 
 // exports
 
@@ -2309,9 +2324,12 @@ var render = function() {
     _vm._v(" "),
     _c(
       "div",
+      { staticClass: "category-menu" },
       [
         _vm.categories != null
-          ? _c("tree-category", { attrs: { categories: _vm.categories } })
+          ? _c("tree-category", {
+              attrs: { prefix: "", categories: _vm.categories }
+            })
           : _vm._e()
       ],
       1
@@ -2324,7 +2342,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "side-bar__header has-text-centered" }, [
-      _c("strong", [_vm._v("Категории")])
+      _c("strong", [_vm._v("Categories")])
     ])
   }
 ]
@@ -2365,11 +2383,23 @@ var render = function() {
                 }
               }
             },
-            [_vm._v(_vm._s(category.value))]
+            [
+              _vm._v(
+                " " + _vm._s(_vm.prefix) + " " + _vm._s(category.value) + " "
+              ),
+              _vm.existChildren(category)
+                ? _c("strong", [_vm._v(" + ")])
+                : _vm._e()
+            ]
           ),
           _vm._v(" "),
           _vm.existChildren(category)
-            ? _c("root", { attrs: { categories: category.children } })
+            ? _c("root", {
+                attrs: {
+                  prefix: "-" + _vm.prefix,
+                  categories: category.children
+                }
+              })
             : _vm._e()
         ],
         1

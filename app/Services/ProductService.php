@@ -22,7 +22,7 @@ class ProductService implements ProductServiceImpl
 
     public function create(array $data)
     {
-        $this->productRepository->create($data);
+        return $this->productRepository->create($data);
     }
 
     public function getById($id)

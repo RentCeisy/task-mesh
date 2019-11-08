@@ -34,15 +34,16 @@ class CategoryQuery implements CategoryRepository
 
     public function delete($id)
     {
-        $this->getCategoryById($id)->delete();
+        return $this->getCategoryById($id)->delete();
     }
 
     public function getRelationshipAll()
     {
         //function roots does not working
         $rootCategories = $this->category->whereNull('parent_id')->get();
+
         foreach ($rootCategories as $category) {
-            $categories[] = $category->first()->getDescendantsAndSelf()->toHierarchy();
+            $categories[] = $category->getDescendantsAndSelf()->toHierarchy();
         }
         $collection = new Collection();
         foreach ($categories as $category) {

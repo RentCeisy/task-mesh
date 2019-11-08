@@ -38,7 +38,7 @@ class CategoryService implements CategoryServiceImpl
 
     public function delete($id)
     {
-        $this->categoryRepository->delete($id);
+        return $this->categoryRepository->delete($id);
     }
 
     public function create($value, $parent)

@@ -25,7 +25,7 @@ class CategoryController extends Controller
      */
     public function index() :Collection
     {
-        return $this->categoryService->getAll();
+        return $this->categoryService->getRelationshipAll();
     }
 
     /**
@@ -92,10 +92,11 @@ class CategoryController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return Response
+     * @return array
      */
     public function destroy($id)
     {
-        $this->categoryService->delete($id);
+        $isDelete = $this->categoryService->delete($id);
+        return ['deleted' => $isDelete];
     }
 }

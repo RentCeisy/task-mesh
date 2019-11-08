@@ -12,7 +12,7 @@
 */
 
 Route::get('/', 'IndexController@index')->name('index');
-Route::get('/categories', 'CategoryController@getRelationshipAll');
-Route::get('/products/cat/{id}', 'ProductController@getProductsByCat');
+//Route::get('/categories', 'CategoryController@getRelationshipAll');
+//Route::get('/products/cat/{id}', 'ProductController@getProductsByCat');
 Route::get('/product/edit/{id}', 'IndexController@index');
 Route::get('/category/edit/{id}', 'IndexController@index');

@@ -1,8 +1,8 @@
 <template>
     <ul>
         <li v-for="category in categories">
-            <span class="clicked" @click="selectCat(category.id)">{{category.value}}</span>
-            <root v-if="existChildren(category)" :categories="category.children"></root>
+            <span class="clicked" @click="selectCat(category.id)"> {{prefix}} {{category.value}} <strong v-if="existChildren(category)"> + </strong></span>
+            <root v-if="existChildren(category)" :prefix="'-' + prefix" :categories="category.children"></root>
         </li>
     </ul>
 </template>
@@ -13,6 +13,7 @@
         name: 'root',
         props: [
             'categories',
+            'prefix'
         ],
         methods: {
             existChildren(category) {
@@ -32,6 +33,8 @@
             selectCat(id) {
                 this.$store.dispatch("setCategory", id);
             },
+        },
+        created() {
         }
     }
 </script>

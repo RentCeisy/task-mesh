@@ -19,3 +19,4 @@ use Illuminate\Http\Request;
 
 Route::resource('/product', 'Api\ProductsController');
 Route::resource('/category', 'Api\CategoryController');
+Route::get('/products/cat/{id}', 'Api\ProductsController@getProductsByCat');

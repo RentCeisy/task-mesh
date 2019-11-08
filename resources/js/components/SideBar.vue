@@ -1,13 +1,13 @@
 <template>
     <div class="side-bar">
         <div class="side-bar__header has-text-centered">
-            <strong>Категории</strong>
+            <strong>Categories</strong>
         </div>
         <div class="btn-add-category">
             <router-link tag="button" :to="'/category/edit/0'" class="button">Add category</router-link>
         </div>
-        <div>
-            <tree-category v-if="categories != null" :categories="categories"></tree-category>
+        <div class="category-menu">
+            <tree-category v-if="categories != null" :prefix="''" :categories="categories"></tree-category>
         </div>
     </div>
 </template>
@@ -24,11 +24,12 @@
         },
         methods: {
             getCategories() {
-                this.$http.get('/categories')
-                    .then(response => {
-                        this.categories = response.body;
-                    }, response => {
-                        console.log(response);
+                this.$http.get('/api/category')
+                    .then(resp => {
+                        console.log(resp.body)
+                        this.categories = resp.body;
+                    }, resp => {
+                        console.log(resp);
                     });
             }
         },
@@ -59,5 +60,9 @@
     .btn-add-category {
         padding: 5px;
         text-align: center;
+    }
+
+    .category-menu {
+        padding-left: 12px;
     }
 </style>
