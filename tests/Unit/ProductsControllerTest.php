@@ -51,6 +51,20 @@ class ProductsControllerTest extends TestCase
     /**
      * @test
      */
+    public function i_cant_save_product()
+    {
+        $category = Category::first();
+        $data = [
+            'name' => 'te',
+            'category' => 'string'
+        ];
+        $this->json('POST', '/api/product', $data)
+            ->assertJsonValidationErrors(['name', 'description', 'category']);
+    }
+
+    /**
+     * @test
+     */
     public function i_can_see_product_by_id()
     {
         $product = Product::first();
